@@ -1,45 +1,69 @@
 const express = require("express")
 const path = require("path")
 const mongoose = require('mongoose')
+const methodOverride = require('method-override')
 
 const Campground = require("./models/campground")
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
-    useNewUrlParser : true,
-    useUnifiedTopology : true
-    })      
-    .then(()=>{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .then(() => {
         console.log("connected successfully")
     })
-    .catch((err)=>{
+    .catch((err) => {
         console.log("something error")
         console.log(err)
     })
 const app = express()
 
 app.set("view engine", 'ejs')
-app.set("views" , path.join(__dirname , 'views'))
-app.get("/" , (req, res)=>{
+app.set("views", path.join(__dirname, 'views'))
+app.use(express.urlencoded({extended:true}))
+app.use(methodOverride("_method"))
+app.get("/", (req, res) => {
     res.render('home')
 })
 
-app.get("/campgrounds", async(req,res)=>{
-    const allCamps  =  await Campground.find({})
-    res.render('campground/index', {allCamps})
+app.get("/campgrounds", async (req, res) => {
+    const allCamps = await Campground.find({})
+    res.render('campground/index', { allCamps })
 })
-app.get("/campgrounds/:id", async(req,res)=>{
-    const { id } = req.params
-    const Camp  =  await Campground.findById(id)
-    res.render('campground/show', {Camp})
-})
-app.get("campgrounds/new", (req,res)=>{
+
+app.get("/campgrounds/add", (req, res) => {
     res.render('campground/newCamp')
 })
-app.post("campgroundNew", async(req,res)=>{
+
+app.get("/campgrounds/:id/edit", async(req, res) => {
+    const { id } = req.params
+    const Camp = await Campground.findById(id)
+    res.render('campground/editCamp' , { Camp })
+})
+
+app.post("/campground", async (req, res) => {
     const addCamp = new Campground(req.body)
     await addCamp.save()
-    res.redirect(`campground/${req.body._id}`)
+    res.redirect(`/campgrounds/${addCamp._id}`)
 })
-app.listen(3000, ()=>{
+
+app.put("/campgrounds/:id", async(req,res)=>{
+    const { id } = req.params
+    const update = await Campground.findByIdAndUpdate(id, {...req.body})
+    res.redirect(`/campgrounds/${id}`)
+})
+
+app.get("/campgrounds/:id", async (req, res) => {
+    const { id } = req.params
+    const Camp = await Campground.findById(id)
+    res.render('campground/show', { Camp })
+})
+
+app.delete("/campgrounds/:id/", async(req,res)=>{
+    const { id } = req.params
+    await Campground.findByIdAndDelete(id)
+    res.redirect("/campgrounds")
+})
+app.listen(3000, () => {
     console.log("listening on port 3000")
 })
