@@ -44,9 +44,12 @@ app.get("/campgrounds/add", (req, res) => {
     res.render('campground/newCamp')
 })
 
-app.get("/campgrounds/:id/edit", async(req, res) => {
+app.get("/campgrounds/:id/edit", async(req, res ,next) => {
     const { id } = req.params
     const Camp = await Campground.findById(id)
+    if ( !Camp ) {
+        return next(new AppError("Camp not found", 404 ))
+    }
     res.render('campground/editCamp' , { Camp })
 })
 
@@ -65,14 +68,12 @@ app.put("/campgrounds/:id", async(req,res)=>{
 app.get("/campgrounds/:id", async (req, res , next) => { //adding next 
     const { id } = req.params
     const Camp = await Campground.findById(id)
-    res.send(Camp)
     if ( !Camp ) {
         // throw new AppError("Camp not found", 404 ) 
         // we cannot do like this because it is async function instead we need to add next and then pass our error to it as:
         return next(new AppError("Camp not found", 404 ))
     }
     res.render('campground/show', { Camp })
-    console.log(Camp)
 })
 
 app.delete("/campgrounds/:id/", async(req,res)=>{
@@ -86,7 +87,7 @@ app.get("/secret" , (req,res)=>{
 })
 
 app.use((err ,req,res,next)=>{
-    const { status= 500 , message = "Something Went Wrong"} = err
+    const {message = "Something Went Wrong", status= 500 } = err
     console.log("Errorrrrr!!!!!!!111")
     res.status(status).send(message)
 }) // this is custom error handler which can handle error from all routes if thrown at time of running
