@@ -4,8 +4,10 @@ const mongoose = require('mongoose')
 const methodOverride = require('method-override')
 const ejsMate = require("ejs-mate")
 
-const AppError = require("./AppError")
+const AppError = require("./utils/AppError")
 const Campground = require("./models/campground")
+const { campSchema } = require("./joiSchema")
+const catchAsync = require("./utils/catchAsync")
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -35,61 +37,71 @@ app.get("/", (req, res) => {
     res.render('home')
 })
 
-app.get("/campgrounds", async (req, res) => {
+app.get("/campgrounds", catchAsync(async (req, res) => {
     const allCamps = await Campground.find({})
     res.render('campground/index', { allCamps })
-})
+}))
 
 app.get("/campgrounds/add", (req, res) => {
     res.render('campground/newCamp')
 })
 
-app.get("/campgrounds/:id/edit", async(req, res ,next) => {
+app.get("/campgrounds/:id/edit", catchAsync(async(req, res ,next) => {
     const { id } = req.params
     const Camp = await Campground.findById(id)
     if ( !Camp ) {
-        return next(new AppError("Camp not found", 404 ))
+        next( new AppError("Camp not found", 404 ))
     }
     res.render('campground/editCamp' , { Camp })
-})
+}))
 
-app.post("/campground", async (req, res) => {
+const validateCamp = ( req, res, next )=>{
+    const { error } = campSchema.validate(req.body)
+    if ( error ){
+        const msg = error.details.map( ele => ele.message).join(",")
+        throw new AppError( msg , 400)
+    }else{
+        next()
+    }
+}
+app.post("/campground", validateCamp , catchAsync(async (req, res , next) => {
+    // if (!req.body) throw new AppError("Body Cannot be empty",400)
     const addCamp = new Campground(req.body.campground)
     await addCamp.save()
     res.redirect(`/campgrounds/${addCamp._id}`)
-})
+}))
 
-app.put("/campgrounds/:id", async(req,res)=>{
+app.put("/campgrounds/:id", validateCamp , catchAsync(async(req,res,next)=>{
     const { id } = req.params
     const update = await Campground.findByIdAndUpdate(id, {...req.body.campground})
     res.redirect(`/campgrounds/${id}`)
-})
+}))
 
-app.get("/campgrounds/:id", async (req, res , next) => { //adding next 
+app.get("/campgrounds/:id", catchAsync(async (req, res , next) => { //adding next
     const { id } = req.params
     const Camp = await Campground.findById(id)
     if ( !Camp ) {
         // throw new AppError("Camp not found", 404 ) 
         // we cannot do like this because it is async function instead we need to add next and then pass our error to it as:
-        return next(new AppError("Camp not found", 404 ))
+        next(new AppError("Camp not found", 404 ))
     }
     res.render('campground/show', { Camp })
-})
+}))
 
-app.delete("/campgrounds/:id/", async(req,res)=>{
+app.delete("/campgrounds/:id/", catchAsync(async(req,res)=>{
     const { id } = req.params
     await Campground.findByIdAndDelete(id)
     res.redirect("/campgrounds")
-})
+}))
 
-app.get("/secret" , (req,res)=>{
-    throw new AppError("Your are not admin",401)
+app.all("*", (req,res,next)=>{
+    next(new AppError("Page not found" , 400))
 })
 
 app.use((err ,req,res,next)=>{
-    const {message = "Something Went Wrong", status= 500 } = err
-    console.log("Errorrrrr!!!!!!!111")
-    res.status(status).send(message)
+    const { status= 500 } = err
+    if (!err.message) { err.message = "Something went wrong!!!"}
+    res.status(status).render("error", { err })
 }) // this is custom error handler which can handle error from all routes if thrown at time of running
 // but this cannot handle async request and they need to be defined at end
 app.listen(3000, () => {
