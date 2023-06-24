@@ -15,4 +15,20 @@
             <input type="submit" value="Delete Camp" class="btn btn-danger "/>
         </form>
 	</div>
+	<h2>Leave a Review</h2>
+	<form action="/campgrounds/<%= Camp._id %>/reviews" method="post" class="mb-3">
+		<div class="mb-3">
+			<label for="rating" class="form-label">
+				Rating
+			</label>
+			<input type="range" name="review[rating]" class="form-range" min="1" max="5" step="1" id="rating">
+		</div>
+		<div class="mb-3">
+			<label for="body" class="form-label">
+				Review
+			</label>
+			<textarea name="review[body]" id="body" class="form-control" cols="30" rows="10"></textarea>
+		</div>
+		<button class="btn btn-success">Submit</button>
+	</form>
 </div>
