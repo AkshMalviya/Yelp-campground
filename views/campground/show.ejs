@@ -1,34 +1,27 @@
 <%- layout("/layouts/boilerplate") %>
-<div class="card mb-3" >
-	<img src="<%= Camp.image %>" class="card-img-top img-fluid"   alt="" />
-	<div class="card-body">
-		<h5 class="card-title"><%= Camp.title %></h5>
-		<p class="card-text"><%= Camp.description %></p>
-	</div>
-	<ul class="list-group list-group-flush">
-		<li class="list-group-item">$ <%= Camp.price %></li>
-		<li class="list-group-item"><%- include("./geo-alt-fill.svg")  %> <%= Camp.location %></li>
-	</ul>
-	<div class="card-body">
-		<a href="/campgrounds/<%= Camp._id %>/edit" class="card-link btn btn-warning ">Edit Campground</a>
-		<form action="/campgrounds/<%= Camp._id %>?_method=DELETE" method="post" class="d-inline">
-            <input type="submit" value="Delete Camp" class="btn btn-danger "/>
-        </form>
-	</div>
-	<h2>Leave a Review</h2>
-	<form action="/campgrounds/<%= Camp._id %>/reviews" method="post" class="mb-3">
-		<div class="mb-3">
-			<label for="rating" class="form-label">
-				Rating
-			</label>
-			<input type="range" name="review[rating]" class="form-range" min="1" max="5" step="1" id="rating">
+<div class="row">
+	<div class="col-6">
+		<div class="card mb-3" >
+			<img src="<%= Camp.image %>" class="card-img-top img-fluid"   alt="" />
+			<div class="card-body">
+				<h5 class="card-title"><%= Camp.title %></h5>
+				<p class="card-text"><%= Camp.description %></p>
+			</div>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">$ <%= Camp.price %></li>
+				<li class="list-group-item"><%- include("./geo-alt-fill.svg")  %> <%= Camp.location %></li>
+			</ul>
+			<div class="card-body">
+				<a href="/campgrounds/<%= Camp._id %>/edit" class="card-link btn btn-warning ">Edit Campground</a>
+				<form action="/campgrounds/<%= Camp._id %>?_method=DELETE" method="post" class="d-inline">
+					<input type="submit" value="Delete Camp" class="btn btn-danger "/>
+				</form>
+			</div>
 		</div>
-		<div class="mb-3">
-			<label for="body" class="form-label">
-				Review
-			</label>
-			<textarea name="review[body]" id="body" class="form-control" cols="30" rows="10"></textarea>
-		</div>
-		<button class="btn btn-success">Submit</button>
-	</form>
+	</div>
+	<div class="col-6">
+		<%- include("./review") %>
+	</div>
 </div>
+
+

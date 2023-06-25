@@ -6,9 +6,9 @@ const ejsMate = require("ejs-mate")
 
 const AppError = require("./utils/AppError")
 const Campground = require("./models/campground")
-const { campSchema } = require("./joiSchema")
+const { campSchema, reviewSchema } = require("./joiSchema")
 const catchAsync = require("./utils/catchAsync")
-const review = require("./models/review")
+const Review = require("./models/review")
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -80,7 +80,7 @@ app.put("/campgrounds/:id", validateCamp , catchAsync(async(req,res,next)=>{
 
 app.get("/campgrounds/:id", catchAsync(async (req, res , next) => { //adding next
     const { id } = req.params
-    const Camp = await Campground.findById(id)
+    const Camp = await Campground.findById(id).populate('review')
     if ( !Camp ) {
         // throw new AppError("Camp not found", 404 ) 
         // we cannot do like this because it is async function instead we need to add next and then pass our error to it as:
@@ -95,10 +95,24 @@ app.delete("/campgrounds/:id/", catchAsync(async(req,res)=>{
     res.redirect("/campgrounds")
 }))
 
-app.post("/campground/:id/reviews" , catchAsync(async(req,res)=>{
+const validatingReview = (req, res, next)=>{
+    const { error } = reviewSchema.validate(req.body)
+    if ( error ){
+        const msg = error.details.map( ele => ele.message).join(",")
+        throw new AppError( msg , 400)
+    }else{
+        next()
+    }
+}
+app.post("/campgroundS/:id/reviews" ,validatingReview , catchAsync(async(req,res, next)=>{
     const { id } = req.params
-    const review =  new review
-    res.send()
+    const camp = await Campground.findById(id)
+    const review =  new Review(req.body.review)
+    camp.review.push(review)
+    await review.save()
+    await camp.save()
+    console.log(camp)
+    res.redirect(`/campgrounds/${camp._id}`)
 }))
 
 app.all("*", (req,res,next)=>{
