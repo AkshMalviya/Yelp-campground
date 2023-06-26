@@ -4,18 +4,15 @@
         <label for="rating" class="form-label">
             Rating
         </label>
-        <input type="range" name="review[rating]" class="form-range" min="1" max="5" step="1" id="rating" required>
+        <input type="range" name="review[rating]" class="form-range" min="1" max="5"  id="rating" required>
     </div>
     <div class="mb-3">
         <label for="body" class="form-label">
             Review
         </label>
-        <textarea name="review[body]" id="body" class="form-control" cols="30" rows="10" required></textarea>
-        <div class="valid-feedback">
-            Looks good!
-        </div>
+        <textarea name="review[body]" id="body" class="form-control" cols="20" rows="3" required></textarea>
         <div class="invalid-feedback">
-            Don't looks good!
+            Review Can't be empty
         </div>
     </div>
     <button class="btn btn-success">Submit</button>
@@ -25,6 +22,11 @@
         <div class="card-body">
             <h5 class="card-title">Rating : <%= review.rating %></h5>
             <p class="card-text">Review : <%= review.body %></p>
+            <div class="text-body-secondary">
+                <form action="/campgrounds/<%= Camp._id %>/review/<%= review._id %>?_method=delete" method="post">
+                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </div>
         </div>
     </div>
 <% } %>
