@@ -23,7 +23,7 @@
             <h5 class="card-title">Rating : <%= review.rating %></h5>
             <p class="card-text">Review : <%= review.body %></p>
             <div class="text-body-secondary">
-                <form action="/campgrounds/<%= Camp._id %>/review/<%= review._id %>?_method=delete" method="post">
+                <form action="/campgrounds/<%= Camp._id %>/reviews/<%= review._id %>?_method=delete" method="POST">
                     <button class="btn btn-sm btn-outline-danger">Delete</button>
                 </form>
             </div>

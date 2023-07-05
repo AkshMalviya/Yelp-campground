@@ -2,7 +2,7 @@
 <div class="row">
     <h1 class="text-center">New Campground</h1>
     <div class="col-6 offset-3">
-        <form action="/campground" method="post" novalidate class="needs-validation">
+        <form action="/campgrounds" method="post" novalidate class="needs-validation">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" class="form-control" name="campground[title]" id="title" required>
@@ -10,7 +10,7 @@
 					Looks good!
 				</div>
 				<div class="invalid-feedback">
-					Review cannot be empty
+					Title cannot be empty
 				</div>
             </div>
             <div class="mb-3">
