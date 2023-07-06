@@ -19,7 +19,8 @@ router.get("/:id/edit", catchAsync(async(req, res ,next) => {
     const { id } = req.params
     const Camp = await Campground.findById(id)
     if ( !Camp ) {
-        next( new AppError("Camp not found", 404 ))
+        req.flash("error", "Cannot find that Camp")
+        return res.redirect("/campgrounds")
     }
     res.render('campground/editCamp' , { Camp })
 }))
@@ -44,6 +45,7 @@ router.post("/", validateCamp , catchAsync(async (req, res , next) => {
 router.put("/:id", validateCamp , catchAsync(async(req,res,next)=>{
     const { id } = req.params
     const update = await Campground.findByIdAndUpdate(id, {...req.body.campground})
+    req.flash("success", "Successfully updated campground")
     res.redirect(`/campgrounds/${id}`)
 }))
 
@@ -53,7 +55,8 @@ router.get("/:id", catchAsync(async (req, res , next) => { //adding next
     if ( !Camp ) {
         // throw new AppError("Camp not found", 404 ) 
         // we cannot do like this because it is async function instead we need to add next and then pass our error to it as:
-        next(new AppError("Camp not found", 404 ))
+        req.flash("error", "Cannot find that Camp")
+        return res.redirect("/campgrounds")
     }
     res.render('campground/show', { Camp })
 }))
@@ -61,6 +64,7 @@ router.get("/:id", catchAsync(async (req, res , next) => { //adding next
 router.delete("/:id/", catchAsync(async(req,res)=>{
     const { id } = req.params
     await Campground.findByIdAndDelete(id)
+    req.flash("success", "Successfully deleted a Camp")
     res.redirect("/campgrounds")
 }))
 
