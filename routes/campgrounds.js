@@ -2,7 +2,8 @@ const express = require("express")
 const catchAsync = require("../utils/catchAsync")
 const Campground = require("../models/campground")
 const AppError = require("../utils/AppError")
-const { campSchema } = require("../joiSchema")
+const { campSchema } = require("../utils/joiSchema")
+const { isLoggedin } = require("../utils/middleware")
 
 const router = express.Router();
 
@@ -11,8 +12,8 @@ router.get("/", catchAsync(async (req, res) => {
     res.render('campground/index', { allCamps })
 }))
 
-router.get("/add", (req, res) => {
-    res.render('campground/newCamp')
+router.get("/add", isLoggedin, (req, res) => {
+    res.render('campground/new')
 })
 
 router.get("/:id/edit", catchAsync(async(req, res ,next) => {
@@ -22,7 +23,7 @@ router.get("/:id/edit", catchAsync(async(req, res ,next) => {
         req.flash("error", "Cannot find that Camp")
         return res.redirect("/campgrounds")
     }
-    res.render('campground/editCamp' , { Camp })
+    res.render('campground/edit' , { Camp })
 }))
 
 const validateCamp = ( req, res, next )=>{
@@ -34,7 +35,7 @@ const validateCamp = ( req, res, next )=>{
         next()
     }
 }
-router.post("/", validateCamp , catchAsync(async (req, res , next) => {
+router.post("/", isLoggedin,  validateCamp , catchAsync(async (req, res , next) => {
     // if (!req.body) throw new AppError("Body Cannot be empty",400)
     const addCamp = new Campground(req.body.campground)
     await addCamp.save()

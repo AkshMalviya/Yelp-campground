@@ -1,5 +1,5 @@
 const express = require("express")
-const { reviewSchema } = require("../joiSchema")
+const { reviewSchema } = require("../utils/joiSchema")
 const Campground = require("../models/campground")
 const catchAsync = require("../utils/catchAsync")
 const Review = require("../models/review")

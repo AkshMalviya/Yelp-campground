@@ -1,0 +1,29 @@
+<%- layout("/layouts/boilerplate") %>
+<h1 class="text-center">Login</h1>
+<div class="row col-6 offset-3">
+    <form action="/login" method="post" novalidate class="needs-validation">
+        <div class="mb-3">
+            <div class="input-group has-validation">
+                <span class="input-group-text" id="addon-wrapping">@</span>
+                <input type="text" class="form-control" placeholder="Username" aria-label="Username" name="username" aria-describedby="addon-wrapping" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <div class="invalid-feedback">
+                    username cannot be empty
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Don't looks good!
+            </div>
+        </div>
+        <button class="btn btn-dark">Login</button>
+    </form>
+</div>
