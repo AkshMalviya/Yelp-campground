@@ -1,9 +1,7 @@
 const express = require("express")
 const catchAsync = require("../utils/catchAsync")
 const Campground = require("../models/campground")
-const AppError = require("../utils/AppError")
-const { campSchema } = require("../utils/joiSchema")
-const { isLoggedin } = require("../utils/middleware")
+const { isLoggedin , isAuthor , validateCamp} = require("../utils/middleware")
 
 const router = express.Router();
 
@@ -16,43 +14,9 @@ router.get("/add", isLoggedin, (req, res) => {
     res.render('campground/new')
 })
 
-router.get("/:id/edit", catchAsync(async(req, res ,next) => {
-    const { id } = req.params
-    const Camp = await Campground.findById(id)
-    if ( !Camp ) {
-        req.flash("error", "Cannot find that Camp")
-        return res.redirect("/campgrounds")
-    }
-    res.render('campground/edit' , { Camp })
-}))
-
-const validateCamp = ( req, res, next )=>{
-    const { error } = campSchema.validate(req.body)
-    if ( error ){
-        const msg = error.details.map( ele => ele.message).join(",")
-        throw new AppError( msg , 400)
-    }else{
-        next()
-    }
-}
-router.post("/", isLoggedin,  validateCamp , catchAsync(async (req, res , next) => {
-    // if (!req.body) throw new AppError("Body Cannot be empty",400)
-    const addCamp = new Campground(req.body.campground)
-    await addCamp.save()
-    req.flash("success", "Successfully made a new campground!")
-    res.redirect(`/campgrounds/${addCamp._id}`)
-}))
-
-router.put("/:id", validateCamp , catchAsync(async(req,res,next)=>{
-    const { id } = req.params
-    const update = await Campground.findByIdAndUpdate(id, {...req.body.campground})
-    req.flash("success", "Successfully updated campground")
-    res.redirect(`/campgrounds/${id}`)
-}))
-
 router.get("/:id", catchAsync(async (req, res , next) => { //adding next
     const { id } = req.params
-    const Camp = await Campground.findById(id).populate('review')
+    const Camp = await Campground.findById(id).populate('review').populate("author")
     if ( !Camp ) {
         // throw new AppError("Camp not found", 404 ) 
         // we cannot do like this because it is async function instead we need to add next and then pass our error to it as:
@@ -62,7 +26,33 @@ router.get("/:id", catchAsync(async (req, res , next) => { //adding next
     res.render('campground/show', { Camp })
 }))
 
-router.delete("/:id/", catchAsync(async(req,res)=>{
+router.get("/:id/edit",isLoggedin,isAuthor,  catchAsync(async(req, res ,next) => {
+    const { id } = req.params
+    const Camp = await Campground.findById(id)
+    if ( !Camp ) {
+        req.flash("error", "Cannot find that Camp")
+        return res.redirect("/campgrounds")
+    }
+    res.render('campground/edit' , { Camp })
+}))
+
+router.post("/", isLoggedin,  validateCamp , catchAsync(async (req, res , next) => {
+    // if (!req.body) throw new AppError("Body Cannot be empty",400)
+    const addCamp = new Campground(req.body.campground)
+    addCamp.author = req.user._id
+    await addCamp.save()
+    req.flash("success", "Successfully made a new campground!")
+    res.redirect(`/campgrounds/${addCamp._id}`)
+}))
+
+router.put("/:id",isLoggedin,isAuthor, validateCamp , catchAsync(async(req,res,next)=>{
+    const { id } = req.params
+    const update = await Campground.findByIdAndUpdate(id, {...req.body.campground})
+    req.flash("success", "Successfully updated campground")
+    res.redirect(`/campgrounds/${id}`)
+}))
+
+router.delete("/:id/", isLoggedin, isAuthor,   catchAsync(async(req,res)=>{
     const { id } = req.params
     await Campground.findByIdAndDelete(id)
     req.flash("success", "Successfully deleted a Camp")

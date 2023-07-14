@@ -9,14 +9,17 @@
 			</div>
 			<ul class="list-group list-group-flush">
 				<li class="list-group-item">$ <%= Camp.price %></li>
-				<li class="list-group-item"><%- include("./geo-alt-fill.svg")  %> <%= Camp.location %></li>
+				<li class="list-group-item">Submitted by <%= Camp.author.username %></li>
+				<li class="list-group-item text-muted"><%- include("./geo-alt-fill.svg")  %> <%= Camp.location %></li>
 			</ul>
-			<div class="card-body">
-				<a href="/campgrounds/<%= Camp._id %>/edit" class="card-link btn btn-warning ">Edit Campground</a>
-				<form action="/campgrounds/<%= Camp._id %>?_method=DELETE" method="post" class="d-inline">
-					<input type="submit" value="Delete Camp" class="btn btn-danger "/>
-				</form>
-			</div>
+			<% if (currentUser && Camp.author.equals(currentUser._id)) { %>
+				<div class="card-body">
+					<a href="/campgrounds/<%= Camp._id %>/edit" class="card-link btn btn-warning ">Edit Campground</a>
+					<form action="/campgrounds/<%= Camp._id %>?_method=DELETE" method="post" class="d-inline">
+						<input type="submit" value="Delete Camp" class="btn btn-danger "/>
+					</form>
+				</div>			 
+			<% } %>
 		</div>
 	</div>
 	<div class="col-6">
