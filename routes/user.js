@@ -33,7 +33,6 @@ router.get("/login", (req,res)=>{
 })
 router.post("/login", storeReturnTo, passport.authenticate("local", { failureFlash:true , failureRedirect:"/login" }) ,(req,res)=>{
     const returnTo = res.locals.returnTo || "/campgrounds"
-    console.log(res.locals , req.session)
     req.flash("success", "Welcome back!")
     res.redirect(returnTo)
 })

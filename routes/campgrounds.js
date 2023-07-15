@@ -16,7 +16,12 @@ router.get("/add", isLoggedin, (req, res) => {
 
 router.get("/:id", catchAsync(async (req, res , next) => { //adding next
     const { id } = req.params
-    const Camp = await Campground.findById(id).populate('review').populate("author")
+    const Camp = await Campground.findById(id).populate({
+        path :'review',
+        populate : {
+            path : "author"
+        }
+    }).populate("author")
     if ( !Camp ) {
         // throw new AppError("Camp not found", 404 ) 
         // we cannot do like this because it is async function instead we need to add next and then pass our error to it as:
