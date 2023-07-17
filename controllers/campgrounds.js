@@ -39,8 +39,10 @@ module.exports.renderEditForm = async(req, res ,next) => {
 module.exports.createCamp = async (req, res , next) => {
     // if (!req.body) throw new AppError("Body Cannot be empty",400)
     const addCamp = new Campground(req.body.campground)
+    addCamp.images = req.files.map(ele => ({url:ele.path , filename: ele.filename}))
     addCamp.author = req.user._id
     await addCamp.save()
+    console.log(addCamp)
     req.flash("success", "Successfully made a new campground!")
     res.redirect(`/campgrounds/${addCamp._id}`)
 }
