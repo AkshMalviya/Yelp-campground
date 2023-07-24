@@ -10,13 +10,13 @@ const router = express.Router();
 
 router.route("/")
     .get(catchAsync(index))
-    .post(isLoggedin,  validateCamp, upload.array("campground[image]") , catchAsync(createCamp))
+    .post(isLoggedin, upload.array("image"), validateCamp , catchAsync(createCamp))
 
 router.get("/add", isLoggedin, renderNewForm)
 
 router.route("/:id")
     .get(catchAsync(fetchById))
-    .put(isLoggedin,isAuthor, validateCamp , catchAsync(editCamp))
+    .put(isLoggedin,isAuthor, upload.array("image"), validateCamp , catchAsync(editCamp))
     .delete(isLoggedin, isAuthor,   catchAsync(deleteCamp))
 
 router.get("/:id/edit",isLoggedin,isAuthor,  catchAsync(renderEditForm))

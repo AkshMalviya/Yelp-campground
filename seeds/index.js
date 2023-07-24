@@ -24,7 +24,6 @@ const seedDB = async() =>{
             author: "64afc916539b7cb8f0c36b90",
             location : `${cities[random].city}, ${cities[random].state}`,
             title : `${sample(descriptors)} ${sample(places)}` ,
-            image : "https://source.unsplash.com/random/?InTheWoods",
             description :  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati dolorem odio porro recusandae reiciendis cumque in magnam ipsam autem quo cupiditate sunt non fugit enim, ullam maxime dolor distinctio magni.",
             price : price
         })

@@ -1,22 +1,31 @@
 <%- layout("/layouts/boilerplate") %>
-<h1>All Campground</h1>
-<a href="/campgrounds/add">Add new campground</a>
+<div id="map" style="width: 100%; height: 500px;"></div>
+<h2 class="d-inline-flex mt-2">All Campground</h2>
+<a href="/campgrounds/add" class="btn btn-primary mt-2 float-end <%= currentUser ? '' :"disabled"%>">Add new camp</a>
 <ul>
     <% allCamps.forEach(element => { %>
-        <div class="card mb-3">
+        <div class="card mb-3 mt-2">
             <div class="row">
                 <div class="col-md-4">
-                    <img src="<%= element.image %>" alt="" class="img-fluid">
+                    <% if (element.images.length) { %>
+                        <img src="<%= element.images[0].url %>" class="d-block w-100" alt="...">
+                    <% } else { %>
+                        <img src="https://climate.onep.go.th/wp-content/uploads/2020/01/default-image-300x225.jpg" class="d-block w-100" alt="...">
+                        <% } %>
                 </div>
                 <div class="col-md-8 mt-2">
-                    <h5 class="card-title"><%= element.title %></h5>
-                    <p class="card-text"> <%= element.description %></p>
-                    <p class="card-text">
+                    <h5 class="card-title ms-2"><%= element.title %></h5>
+                    <p class="card-text ms-2"> <%= element.description %></p>
+                    <p class="card-text ms-2">
                         <small class="text-muted"><%- include("./geo-alt-fill.svg")  %> <%= element.location %></small>
                     </p>
-                    <a href="/campgrounds/<%= element._id %>" class="btn btn-primary">View <%= element.title %></a>
+                    <a href="/campgrounds/<%= element._id %>" class="btn btn-primary ms-2">View <%= element.title %></a>
                 </div>
             </div>
         </div>
     <% }); %>
 </ul>
+<script>
+    const campgrounds = { features: <%- JSON.stringify(allCamps) %>}
+</script>
+<script src="/js/cluster.js"></script>

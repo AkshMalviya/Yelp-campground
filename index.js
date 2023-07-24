@@ -10,27 +10,34 @@ const session = require("express-session")
 const flash = require("connect-flash")
 const passport = require("passport")
 const LocalStrategy = require("passport-local")
+const helmet = require("helmet")
+const mongoSanitize = require("express-mongo-sanitize")
+const mongoDbStore = require("connect-mongo")(session)
 
 const AppError = require("./utils/AppError")
-const catchAsync = require("./utils/catchAsync")
-
 const userRoute = require("./routes/user")
 const reviewRoutes = require("./routes/reviews")
 const campgroundRoutes = require("./routes/campgrounds")
 const User = require("./models/user")
 
 
-mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+// mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// })
+//     .then(() => {
+//         console.log("connected successfully")
+//     })
+//     .catch((err) => {
+//         console.log("something error")
+//         console.log(err)
+//     })
+const password = encodeURIComponent("Aksh@1234")
+const mongoUrl = `mongodb+srv://malviyaaksh:${password}@cluster0.sqyyd5p.mongodb.net/?retryWrites=true&w=majority`
+mongoose.connect( mongoUrl ,{ useNewUrlParser: true, useUnifiedTopology: true })
+    .then((e) => {
+    console.log("Connected Successfully")
 })
-    .then(() => {
-        console.log("connected successfully")
-    })
-    .catch((err) => {
-        console.log("something error")
-        console.log(err)
-    })
 const app = express()
 
 app.engine('ejs', ejsMate) 
@@ -39,19 +46,32 @@ app.set("views", path.join(__dirname, 'views'))
 app.use(express.urlencoded({extended:true}))
 app.use(methodOverride("_method"))
 app.use(express.static(path.join(__dirname , "public")))
-const sessionConfig = {
+app.use(mongoSanitize())
+
+const mongoStore = new mongoDbStore({
+    url:mongoUrl,
     secret:"ThisIsAVerySecret!",
-    resave:false,
-    saveUninitialized :true,
+    touchAfter: 24*60*60
+})
+mongoStore.on('error', (e)=>{
+    console.log("error in mongostore", e)
+})
+const sessionConfig = {
+    store: mongoStore,
+    name: "sessionMongo",
+    secret: "ThisIsAVerySecret!",
+    resave: false,
+    saveUninitialized: true,
     cookie:{
-        httpOnly:true,
-        expires:Date.now() + 1000*60*60*24*7,
+        httpOnly: true,
+        // secure : true,
+        expires: Date.now() + 1000*60*60*24*7,
         maxAge : 1000*60*60*24*7
     }
 }
 app.use(session(sessionConfig))
 app.use(flash())
-
+app.use( helmet({ contentSecurityPolicy:false, }) )
 // passport configuration for authentication
 app.use(passport.initialize())
 app.use(passport.session())
@@ -65,6 +85,7 @@ app.use((req,res,next)=>{
     res.locals.currentUser = req.user
     next()
 })
+
 
 
 app.get("/", (req, res) => {

@@ -1,12 +1,21 @@
+<link rel="stylesheet" href="/css/flash.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+<script>
+    // const notification = document.querySelector('.alert')
+    setTimeout(()=>{
+        $('#alert').alert('close')
+    }, 3000)
+</script>
 <% if(success && success.length ) {%>
-    <div class="alert alert-success" role="alert">
+    <div class="alert alert-success flasher" role="alert" id="alert">
         <%= success %>
-        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close">
+        </button>
     </div>
 <% } %>
 
 <% if(error && error.length ) {%>
-    <div class="alert alert-danger fade show" role="alert">
+    <div class="alert alert-danger fade show flasher" role="alert" id="alert"> 
         <%= error %>
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>

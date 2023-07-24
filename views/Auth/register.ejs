@@ -1,39 +1,50 @@
 <%- layout("/layouts/boilerplate") %>
-<h1 class="text-center">REGISTER</h1>
-<div class="row col-6 offset-3">
-    <form action="/register" method="post" novalidate class="needs-validation">
-        <div class="mb-3">
-            <div class="input-group has-validation">
-                <span class="input-group-text" id="addon-wrapping">@</span>
-                <input type="text" class="form-control" placeholder="Username" aria-label="Username" name="username" aria-describedby="addon-wrapping" required>
-                <div class="valid-feedback">
-                    Looks good!
+<div class="container d-flex justify-content-center align-items-center mt-2 mb-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 ">
+            <div class="card shadow w-100">
+                <img src="/register.jpg" class="card-img-top" alt="" srcset="">
+                <div class="card-body pt-0">
+                    <h5 class=" card-title pb-2 text-center">Register</h5>
+                    <form action="/register" method="post" novalidate class="needs-validation">
+                        <div class="mb-3">
+                            <div class="input-group has-validation">
+                                <span class="input-group-text" id="addon-wrapping">@</span>
+                                <input type="text" class="form-control" placeholder="Username" aria-label="Username" name="username" aria-describedby="addon-wrapping" required autofocus>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                                <div class="invalid-feedback">
+                                    username cannot be empty
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="email" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <div class="invalid-feedback">
+                                Don't looks good!
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" name="password" id="password" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <div class="invalid-feedback">
+                                Don't looks good!
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-dark">Sign Up</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="invalid-feedback">
-                    username cannot be empty
-                </div>
             </div>
         </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" id="email" required>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Don't looks good!
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" name="password" id="password" required>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Don't looks good!
-            </div>
-        </div>
-        <button class="btn btn-dark">Sign Up</button>
-    </form>
+    </div>
 </div>

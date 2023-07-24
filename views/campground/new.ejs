@@ -32,7 +32,11 @@
 				<div class="invalid-feedback">
 					Don't looks good!
 				</div> -->
-                <input type="file" name="campground[image]" id="" multiple>
+                <!-- <input type="file" name="image" id="" multiple> -->
+                <!-- <div class="mb-3"> -->
+                <label for="formFileMultiple" class="form-label">Upload images</label>
+                <input class="form-control" type="file" id="formFileMultiple" name="image" multiple onchange=handleimage()>
+                  <!-- </div> -->
             </div>
             <div class="mb-3">
                 <label for="price" class="form-label">Price</label>
@@ -58,11 +62,21 @@
 					Don't looks good!
 				</div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 text-center">
                 <button type="submit" class="btn btn-primary">Add Campground</button>
+                <a href="/campgrounds" class="btn btn-outline-dark ms-4">Cancel</a>
             </div>
         </form>
-        <a href="/campgrounds" class="btn btn-outline-primary mb-3">Cancel</a>
     </div>
 </div>
-
+<script>
+    const img = document.querySelector('#formFileMultiple')
+    const handleimage = ()=>{
+        // console.log('done')
+        // console.log(img.value)
+        const isValid = /\.jpe?g/i.test(img.value)
+        if(!isValid){
+            alert('Not a valid image type')
+        }
+    }
+</script>

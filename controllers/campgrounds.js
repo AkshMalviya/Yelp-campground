@@ -1,5 +1,7 @@
 const Campground = require("../models/campground")
-
+const { cloudinary } = require("../utils/cloudinary")
+const mbxClient = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocoder = mbxClient({ accessToken: process.env.MAPBOX_TOKEN });
 module.exports.index = async (req, res) => {
     const allCamps = await Campground.find({})
     res.render('campground/index', { allCamps })
@@ -38,7 +40,16 @@ module.exports.renderEditForm = async(req, res ,next) => {
 
 module.exports.createCamp = async (req, res , next) => {
     // if (!req.body) throw new AppError("Body Cannot be empty",400)
+    console.log(req.body)
+    const geoData = await geocoder.forwardGeocode({
+        query : req.body.campground.location,
+        limit: 1
+    }).send()
+    if(!geoData.body.features.length){
+        geoData.body.features.push({geometry :{ type: 'Point', coordinates: [ 75.8682, 22.720362 ] }})
+    }
     const addCamp = new Campground(req.body.campground)
+    addCamp.geometry = geoData.body.features[0].geometry 
     addCamp.images = req.files.map(ele => ({url:ele.path , filename: ele.filename}))
     addCamp.author = req.user._id
     await addCamp.save()
@@ -50,6 +61,16 @@ module.exports.createCamp = async (req, res , next) => {
 module.exports.editCamp = async(req,res,next)=>{
     const { id } = req.params
     const update = await Campground.findByIdAndUpdate(id, {...req.body.campground})
+    const img = req.files.map(ele => ({url:ele.path , filename: ele.filename}))
+    update.images.push(...img)
+    if(req.body.deleteImages){
+        for(let filename of req.body.deleteImages){
+            await cloudinary.uploader.destroy(filename)
+        }
+        await update.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages }}}})
+    }
+    await update.save()
+    console.log(update)
     req.flash("success", "Successfully updated campground")
     res.redirect(`/campgrounds/${id}`)
 }

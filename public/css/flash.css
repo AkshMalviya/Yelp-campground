@@ -1,0 +1,7 @@
+.flasher{
+    position: absolute !important;
+    right: 1%;
+    top: 10%;
+    width: 30vw;
+    z-index: 10;
+}

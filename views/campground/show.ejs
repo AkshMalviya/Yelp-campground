@@ -3,15 +3,33 @@
 <div class="row">
 	<div class="col-6" >
 		<div class="card mb-3" >
-			<img src="<%= Camp.image %>" class="card-img-top img-fluid"   alt="" />
+			<div id="carouselExample" class="carousel slide">
+				<div class="carousel-inner">
+					<% Camp.images.forEach((element , i) => { %>
+						<div class="carousel-item <%= i===0 ? 'active' : '' %>">
+						  <img src="<%= element.url %>" class="d-block w-100" alt="...">
+						</div>
+					<% }); %>
+				</div>
+				<% if (Camp.images.length > 1){ %>
+					<button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Previous</span>
+					</button>
+					<button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Next</span>
+					</button>
+				<% } %>
+			</div>
 			<div class="card-body">
 				<h5 class="card-title"><%= Camp.title %></h5>
 				<p class="card-text"><%= Camp.description %></p>
 			</div>
 			<ul class="list-group list-group-flush">
+				<li class="list-group-item"><%- include("./geo-alt-fill.svg")  %> <%= Camp.location %></li>
 				<li class="list-group-item">$ <%= Camp.price %></li>
 				<li class="list-group-item">Submitted by <%= Camp.author.username %></li>
-				<li class="list-group-item text-muted"><%- include("./geo-alt-fill.svg")  %> <%= Camp.location %></li>
 			</ul>
 			<% if (currentUser && Camp.author.equals(currentUser._id)) { %>
 				<div class="card-body">
@@ -24,6 +42,27 @@
 		</div>
 	</div>
 	<div class="col-6">
-			<%- include("./review") %>		 
+		<div id="map" style="width: 100%; height: 300px;"></div>
+		<%- include("./review") %>		 
 	</div>
 </div>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYWtzaC1tYWx2aXlhIiwiYSI6ImNsa2F0c2t6MDA5bzAzZHFkMXdpN3J2NGoifQ.-U3xUPS-V6WezKq_pLJhzw';
+	// const cordinate = <%- JSON.stringify(Camp.geometry.coordinates) %>;
+		const map = new mapboxgl.Map({
+			container: 'map', // container ID
+			style: 'mapbox://styles/mapbox/streets-v12', // style URL
+			center: <%- JSON.stringify(Camp.geometry.coordinates) %>, // starting position [lng, lat]
+			zoom: 9 // starting zoom
+		});
+		new mapboxgl.Marker()
+			.setLngLat(<%- JSON.stringify(Camp.geometry.coordinates) %>)
+			.setPopup(
+				new mapboxgl.Popup({ offset : 25 })
+				.setHTML(
+					`<h5><%= Camp.title %></h5><p><%= Camp.location%> </p>`
+				)
+			)
+			.addTo(map)
+		map.addControl(new mapboxgl.NavigationControl())
+</script>
