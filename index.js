@@ -21,7 +21,7 @@ const reviewRoutes = require("./routes/reviews")
 const campgroundRoutes = require("./routes/campgrounds")
 const User = require("./models/user")
 
-
+const mongoUrl = 'mongodb://127.0.0.1:27017/yelp-camp'
 // mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
 //     useNewUrlParser: true,
 //     useUnifiedTopology: true
@@ -33,8 +33,6 @@ const User = require("./models/user")
 //         console.log("something error")
 //         console.log(err)
 //     })
-const password = encodeURIComponent("Aksh@1234")
-const mongoUrl = `mongodb+srv://malviyaaksh:${password}@cluster0.sqyyd5p.mongodb.net/?retryWrites=true&w=majority`
 mongoose.connect( mongoUrl ,{ useNewUrlParser: true, useUnifiedTopology: true })
     .then((e) => {
     console.log("Connected Successfully")
